@@ -21,30 +21,61 @@ CREATE TABLE IF NOT EXISTS bronze.rent_raw (
 );
 
 
-CREATE TABLE IF NOT EXISTS silver.rent_clean (
-    -- 1. Takip ve Sistem Sütunları
+CREATE TABLE silver.rent_clean (
     id SERIAL PRIMARY KEY,
     ingestion_time TIMESTAMP DEFAULT now(),
     source_file TEXT,
-    
-    
-    -- 2. Temel Veriler (İsimleri güncelledik)
+
     rent_euro NUMERIC,
-    rent_year INTEGER, -- Artık "year" değil, çakışma yapmaz
+    rent_year INTEGER,
     half INTEGER,
-    
-    -- 3. Konum Bilgileri
+    property_type TEXT,    -- EKLEDİK
+    bedrooms TEXT,         -- EKLEDİK
+    bedrooms_num INTEGER,  -- EKLEDİK (NULL olanları 0 yapacağız)
     county TEXT,
     province TEXT,
     area TEXT,
     location TEXT,
-    
-    -- 4. Analitik Bayraklar (Boolean)
     is_dublin BOOLEAN,
     is_city BOOLEAN,
     is_county_aggregate BOOLEAN
 );
 
+
+CREATE TABLE IF NOT EXISTS gold.dim_location(
+    id SERIAL PRIMARY KEY,
+    county TEXT NOT NULL,
+    province TEXT,
+    area TEXT,
+    location TEXT,
+    is_dublin BOOLEAN,
+    is_city BOOLEAN
+);
+
+CREATE TABLE IF NOT EXISTS gold.dim_property(
+    id SERIAL PRIMARY KEY,
+    property_type TEXT,
+    bedrooms TEXT,
+    bedrooms_num INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS gold.dim_time(
+    id SERIAL PRIMARY KEY,
+    rent_year INTEGER,
+    half INTEGER
+);
+
+CREATE TABLE gold.fact_rent (
+    id SERIAL PRIMARY KEY,
+    dim_location_id INTEGER REFERENCES gold.dim_location(id), -- Lokasyon tablosuna bağlantı
+    dim_property_id INTEGER REFERENCES gold.dim_property(id), -- Mülk tablosuna bağlantı
+    dim_time_id INTEGER REFERENCES gold.dim_time(id),         -- Zaman tablosuna bağlantı
+    rent_euro NUMERIC(10, 2),                                 -- Asıl metrik: Kira miktarı
+    
+    -- Veri tutarlılığı için UNIQUE kısıtı: 
+    -- Aynı lokasyon, aynı mülk tipi ve aynı zamanda sadece bir kira kaydı olabilir.
+    CONSTRAINT uq_fact_rent UNIQUE (dim_location_id, dim_property_id, dim_time_id)
+);
 
 
 
