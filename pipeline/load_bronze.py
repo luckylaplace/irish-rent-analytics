@@ -1,5 +1,8 @@
+import os
+from dotenv import load_dotenv
 import pandas as pd
 import psycopg2
+import psycopg2.extras
 from datetime import datetime
 
 # -------------------------
@@ -7,11 +10,14 @@ from datetime import datetime
 # -------------------------
 CSV_PATH = "data/rent_prices.csv"
 
+
+load_dotenv()
+
 conn = psycopg2.connect(
-    host="localhost",
-    database="rent_dwh",
-    user="postgres",
-    password="1234"
+    host=os.getenv("DB_HOST","localhost"),
+    database=os.getenv("POSTGRES_DB"),
+    user=os.getenv("POSTGRES_USER"),
+    password=os.getenv("POSTGRES_PASSWORD")
 )
 
 cur = conn.cursor()
@@ -28,6 +34,7 @@ start_time = datetime.now()
 # -------------------------
 # INSERT QUERY
 # -------------------------
+# execute_values kullanımı için VALUES kısmını sadece %s yapıyoruz.
 insert_query = """
 INSERT INTO bronze.rent_raw (
     rent_euro,
@@ -47,15 +54,17 @@ INSERT INTO bronze.rent_raw (
     is_county_aggregate,
     source_file
 )
-VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES %s
 """
 
 # -------------------------
 # ETL PROCESS
 # -------------------------
 try:
+    # Veriyi veritabanına daha hızlı yazmak için liste (tuple) formatına çeviriyoruz
+    data_tuples = []
     for _, row in df.iterrows():
-        cur.execute(insert_query, (
+        data_tuples.append((
             row["rent_euro"],
             row["year"],
             row["half"],
@@ -73,6 +82,9 @@ try:
             row["is_county_aggregate"],
             "rent_prices.csv"
         ))
+
+    # execute_values ile tek seferde toplu (bulk) ekleme işlemi
+    psycopg2.extras.execute_values(cur, insert_query, data_tuples)
 
     end_time = datetime.now()
     duration = end_time - start_time

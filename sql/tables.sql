@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS bronze.rent_raw (
 );
 
 
-CREATE TABLE silver.rent_clean (
+CREATE TABLE IF NOT EXISTS silver.rent_clean (
     id SERIAL PRIMARY KEY,
     ingestion_time TIMESTAMP DEFAULT now(),
     source_file TEXT,
@@ -49,23 +49,26 @@ CREATE TABLE IF NOT EXISTS gold.dim_location(
     area TEXT,
     location TEXT,
     is_dublin BOOLEAN,
-    is_city BOOLEAN
+    is_city BOOLEAN,
+    CONSTRAINT uq_location UNIQUE (county, province, area, location)
 );
 
 CREATE TABLE IF NOT EXISTS gold.dim_property(
     id SERIAL PRIMARY KEY,
     property_type TEXT,
     bedrooms TEXT,
-    bedrooms_num INTEGER
+    bedrooms_num INTEGER,
+    CONSTRAINT uq_property UNIQUE (property_type, bedrooms)
 );
 
 CREATE TABLE IF NOT EXISTS gold.dim_time(
     id SERIAL PRIMARY KEY,
     rent_year INTEGER,
-    half INTEGER
+    half INTEGER,
+    CONSTRAINT uq_time UNIQUE (rent_year, half)
 );
 
-CREATE TABLE gold.fact_rent (
+CREATE TABLE IF NOT EXISTS gold.fact_rent (
     id SERIAL PRIMARY KEY,
     dim_location_id INTEGER REFERENCES gold.dim_location(id), -- Lokasyon tablosuna bağlantı
     dim_property_id INTEGER REFERENCES gold.dim_property(id), -- Mülk tablosuna bağlantı
