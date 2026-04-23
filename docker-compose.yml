@@ -28,7 +28,12 @@ services:
       - "3000:3000"
     depends_on:
       - postgres
+    environment:
+      - MB_DB_FILE=/metabase-data/metabase.db
+    volumes:
+      - metabase_data:/metabase-data
     restart: unless-stopped
 
 volumes:
   postgres_data:
+  metabase_data:
