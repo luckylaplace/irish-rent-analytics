@@ -6,14 +6,12 @@
 [![Prefect](https://img.shields.io/badge/Prefect-3.0-white.svg)](https://www.prefect.io/)
 [![Metabase](https://img.shields.io/badge/Metabase-BI-509EE3.svg)](https://www.metabase.com/)
 
-[🌍 English Version](#english) | [🇹🇷 Türkçe Versiyon](#türkçe)
+An end-to-end Data Engineering and Business Intelligence project that analyzes the Irish rental market. The pipeline extracts raw CSV data, transforms it using a **Medallion Architecture (Bronze -> Silver -> Gold)**, ensures data quality via automated tests, orchestrates the workflow with **Prefect**, and visualizes the results on a **Metabase** dashboard.
 
 ---
 
-<a id="english"></a>
-## 🌍 English
-
-An end-to-end Data Engineering and Business Intelligence project that analyzes the Irish rental market. The pipeline extracts raw CSV data, transforms it using a **Medallion Architecture (Bronze -> Silver -> Gold)**, ensures data quality via automated tests, orchestrates the workflow with **Prefect**, and visualizes the results on a **Metabase** dashboard.
+<details open>
+<summary><h2>🇬🇧 English Documentation</h2></summary>
 
 ### 🏗️ Architecture & Tech Stack
 - **Data Source**: Irish Rent Prices Dataset (CSV)
@@ -78,7 +76,9 @@ erDiagram
 ### 📊 The Dashboard
 *A comprehensive view of the Irish rental market, visualizing price trends, county disparities, and property type distributions.*
 
-![Metabase Dashboard](images/dashboard.png)
+<div align="center">
+  <img src="images/rent_dashboard.png" alt="Metabase Dashboard" width="100%">
+</div>
 
 ### 🚀 How to Run
 1. **Start the Infrastructure**: `docker-compose up -d`
@@ -86,10 +86,10 @@ erDiagram
 3. **Run the ETL Pipeline**: `python run_pipeline.py`
 4. **View Dashboards**: Open `http://localhost:3000` to access Metabase.
 
----
+</details>
 
-<a id="türkçe"></a>
-## 🇹🇷 Türkçe
+<details>
+<summary><h2>🇹🇷 Türkçe Dokümantasyon</h2></summary>
 
 İrlanda kiralık ev piyasasını analiz eden, uçtan uca bir Veri Mühendisliği ve İş Zekası (BI) projesi. Bu boru hattı (pipeline); ham CSV verisini çeker, **Medallion Mimarisi (Bronze -> Silver -> Gold)** kullanarak dönüştürür, otomatik testlerle veri kalitesini sağlar, tüm iş akışını **Prefect** ile yönetir ve sonuçları **Metabase** panosu (dashboard) üzerinde görselleştirir.
 
@@ -156,10 +156,14 @@ erDiagram
 ### 📊 Raporlama ve Pano (Dashboard)
 *İrlanda kiralık ev piyasasının kapsamlı bir özeti; fiyat trendleri, bölgesel farklar ve ev tipi dağılımları.*
 
-![Metabase Dashboard](images/dashboard.png)
+<div align="center">
+  <img src="images/rent_dashboard.png" alt="Metabase Dashboard" width="100%">
+</div>
 
 ### 🚀 Nasıl Çalıştırılır?
 1. **Altyapıyı Başlatın**: `docker-compose up -d`
 2. **Gereksinimleri Yükleyin**: `pip install -r requirements.txt`
 3. **ETL Sürecini (Pipeline) Başlatın**: `python run_pipeline.py`
 4. **Raporları Görüntüleyin**: Metabase paneline erişmek için tarayıcınızda `http://localhost:3000` adresine gidin.
+
+</details>
