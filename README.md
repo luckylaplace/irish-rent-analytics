@@ -26,6 +26,20 @@ An end-to-end Data Engineering and Business Intelligence project that analyzes t
 
 ## ⚙️ Data Pipeline (Medallion Architecture)
 
+```mermaid
+graph LR
+    A[(Raw CSV Data)] -->|load_bronze.py| B[(Bronze Layer<br/>Raw Tables)]
+    B -->|transform_silver.sql| C[(Silver Layer<br/>Cleaned Data)]
+    C -->|build_gold.sql| D[(Gold Layer<br/>Star Schema)]
+    D --> E[Metabase BI<br/>Dashboard]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#cd7f32,stroke:#333,stroke-width:2px
+    style C fill:#c0c0c0,stroke:#333,stroke-width:2px
+    style D fill:#ffd700,stroke:#333,stroke-width:2px
+    style E fill:#87CEEB,stroke:#333,stroke-width:2px
+```
+
 1. **Bronze Layer (Raw Data)**: Python script (`load_bronze.py`) utilizes `psycopg2.extras.execute_values` for high-performance bulk insertion of raw CSV data into PostgreSQL.
 2. **Silver Layer (Cleansed Data)**: SQL transformations (`transform_silver.sql`) clean the data, normalize columns, and remove duplicates.
 3. **Gold Layer (Star Schema)**: SQL scripts (`build_gold.sql`) model the cleansed data into a Star Schema (`fact_rent`, `dim_location`, `dim_property`, `dim_time`) for analytical reporting.
@@ -63,6 +77,41 @@ An end-to-end Data Engineering and Business Intelligence project that analyzes t
 - **Tekrarlanabilirlik (Idempotency)**: `TRUNCATE` ve `ON CONFLICT DO NOTHING` ile sağlanmıştır.
 
 ## ⚙️ Veri Boru Hattı (Medallion Mimarisi)
+
+```mermaid
+erDiagram
+    fact_rent {
+        int id PK
+        int dim_location_id FK
+        int dim_property_id FK
+        int dim_time_id FK
+        numeric rent_euro
+    }
+    dim_location {
+        int id PK
+        string county
+        string province
+        string area
+        string location
+        boolean is_dublin
+        boolean is_city
+    }
+    dim_property {
+        int id PK
+        string property_type
+        string bedrooms
+        int bedrooms_num
+    }
+    dim_time {
+        int id PK
+        int rent_year
+        int half
+    }
+    
+    dim_location ||--o{ fact_rent : "has"
+    dim_property ||--o{ fact_rent : "has"
+    dim_time ||--o{ fact_rent : "has"
+```
 
 1. **Bronze Katmanı (Ham Veri)**: `load_bronze.py` dosyası, `execute_values` (Bulk Insert) kullanarak devasa CSV verisini saniyeler içinde veritabanına yazar.
 2. **Silver Katmanı (Temizlenmiş Veri)**: Veriler temizlenir, standartlaştırılır ve SQL ile ayıklanır (`transform_silver.sql`).
