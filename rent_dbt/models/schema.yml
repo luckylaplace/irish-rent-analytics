@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: fact_rent
+    description: "İrlanda kiralık ev piyasası için oluşturduğumuz ana (fact) tablo."
+    columns:
+      - name: rent_euro
+        description: "Aylık kira tutarı."
+        tests:
+          - not_null
+      - name: dim_location_id
+        description: "Lokasyon boyut tablosuna giden Yabancı Anahtar (Foreign Key)."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: id
+
+  - name: dim_location
+    description: "Lokasyon boyut tablosu (İlçe, şehir, vb.)"
+    columns:
+      - name: id
+        description: "Benzersiz (Unique) lokasyon kimliği."
+        tests:
+          - unique
+          - not_null
+
+  - name: silver_rent
+    description: "Temizlenmiş ana verisetimiz."
+    columns:
+      - name: rent_euro
+        tests:
+          - not_null

@@ -17,24 +17,25 @@ An end-to-end Data Engineering and Business Intelligence project that analyzes t
 - **Data Source**: Irish Rent Prices Dataset (CSV)
 - **Database**: PostgreSQL (Containerized via Docker)
 - **Orchestration**: Prefect (Python)
+- **Transformation & Testing**: dbt (Data Build Tool)
 - **Data Modeling**: Medallion Architecture & Star Schema (Fact & Dimensions)
 - **BI / Visualization**: Metabase
-- **Idempotency**: Handled via `TRUNCATE` and `ON CONFLICT DO NOTHING`
+- **Idempotency**: Handled natively by dbt (`TRUNCATE` and `INSERT`)
 
 ### ⚙️ Data Pipeline (Medallion Architecture)
 
 ```mermaid
 graph LR
     A[(Raw CSV Data)] -->|load_bronze.py| B[(Bronze Layer<br/>Raw Tables)]
-    B -->|transform_silver.sql| C[(Silver Layer<br/>Cleaned Data)]
-    C -->|build_gold.sql| D[(Gold Layer<br/>Star Schema)]
+    B -->|dbt run| C[(Silver Layer<br/>Cleaned Data)]
+    C -->|dbt run| D[(Gold Layer<br/>Star Schema)]
     D --> E[Metabase BI<br/>Dashboard]
 ```
 
 1. **Bronze Layer (Raw Data)**: Python script (`load_bronze.py`) utilizes `execute_values` for high-performance bulk insertion.
-2. **Silver Layer (Cleansed Data)**: SQL transformations (`transform_silver.sql`) clean the data, normalize columns, and remove duplicates.
-3. **Gold Layer (Star Schema)**: SQL scripts (`build_gold.sql`) model the cleansed data into a Star Schema for analytical reporting.
-4. **Data Quality Audits**: Automated SQL scripts (`tests/`) run integrity checks at the end of the pipeline.
+2. **Silver Layer (Cleansed Data)**: **dbt** models clean the data, normalize columns, and remove duplicates.
+3. **Gold Layer (Star Schema)**: **dbt** models transform the cleansed data into a Star Schema for analytical reporting.
+4. **Data Quality Audits**: **dbt test** automatically validates referential integrity, null constraints, and uniqueness at the end of the pipeline.
 
 ### 🗄️ Data Model (Star Schema)
 
@@ -97,24 +98,25 @@ erDiagram
 - **Veri Kaynağı**: İrlanda Kira Fiyatları Veriseti (CSV)
 - **Veritabanı**: PostgreSQL (Docker ile çalışır)
 - **Orkestrasyon**: Prefect (Python)
+- **Dönüşüm ve Test (T)**: dbt (Data Build Tool)
 - **Veri Modelleme**: Medallion Mimarisi & Star Schema (Fact ve Boyut Tabloları)
 - **İş Zekası (BI)**: Metabase
-- **Tekrarlanabilirlik (Idempotency)**: `TRUNCATE` ve `ON CONFLICT DO NOTHING` ile sağlanmıştır.
+- **Tekrarlanabilirlik (Idempotency)**: dbt tarafından otomatik sağlanır.
 
 ### ⚙️ Veri Boru Hattı (Medallion Mimarisi)
 
 ```mermaid
 graph LR
     A[(Ham CSV Verisi)] -->|load_bronze.py| B[(Bronze Katmanı<br/>Ham Tablolar)]
-    B -->|transform_silver.sql| C[(Silver Katmanı<br/>Temizlenmiş Veri)]
-    C -->|build_gold.sql| D[(Gold Katmanı<br/>Star Schema)]
+    B -->|dbt run| C[(Silver Katmanı<br/>Temizlenmiş Veri)]
+    C -->|dbt run| D[(Gold Katmanı<br/>Star Schema)]
     D --> E[Metabase BI<br/>Dashboard]
 ```
 
 1. **Bronze Katmanı (Ham Veri)**: `load_bronze.py` dosyası, `execute_values` kullanarak devasa CSV verisini saniyeler içinde veritabanına yazar.
-2. **Silver Katmanı (Temizlenmiş Veri)**: Veriler temizlenir, standartlaştırılır ve SQL ile ayıklanır (`transform_silver.sql`).
-3. **Gold Katmanı (Star Schema)**: Temizlenen veri, analitik raporlamaya uygun olarak Fact ve Dimension (Boyut) tablolarına ayrılır (`build_gold.sql`).
-4. **Veri Kalitesi Testleri**: Pipeline'ın en sonunda çalışan SQL testleri (`tests/`), verinin doğruluğunu ve eksiksiz olduğunu denetler.
+2. **Silver Katmanı (Temizlenmiş Veri)**: **dbt** modelleri (models) verileri temizler, standartlaştırır ve ayıklar.
+3. **Gold Katmanı (Star Schema)**: **dbt** modelleri, temizlenen veriyi analitik raporlamaya uygun olarak Fact ve Dimension (Boyut) tablolarına böler.
+4. **Veri Kalitesi Testleri**: Pipeline'ın en sonunda **dbt test** çalışarak verinin doğruluğunu (Referential Integrity, Null checks) otomatik olarak denetler.
 
 ### 🗄️ Veri Modeli (Star Schema)
 
