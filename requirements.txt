@@ -10,3 +10,15 @@ tqdm==4.66.2
 loguru==0.7.2
 prefect
 dbt-postgres
+
+# --- Veri Analizi & Görselleştirme ---
+matplotlib==3.8.3
+seaborn==0.13.2
+plotly==5.19.0
+
+# --- Veri Bilimi (ML) ---
+scikit-learn==1.4.1.post1
+
+# --- Notebook Ortamı ---
+jupyter==1.0.0
+ipykernel==6.29.3
